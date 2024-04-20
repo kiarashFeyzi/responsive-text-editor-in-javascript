@@ -1,0 +1,112 @@
+:root{
+    --textSize : calc(0.4vmin + 0.6vmax);
+    --textSize_1: calc(0.2vmin + 0.8vmax);
+}
+html{
+    height: 100%;
+}
+body{
+    margin: 0px;
+    height: 80%;  
+    background-color: #023020;
+}
+.buttons{
+    height: 100%;
+    width: 8%;
+
+
+    /* font-size: 100%; */
+
+    font-size: calc(3 * var(--textSize));
+
+    background-color: white;
+    border: 0px;
+    border-radius: 10%;
+
+}
+#result{
+    margin: auto; 
+    width: 80%;
+    border-radius: 5%; 
+    background-color: white;
+    /* font-size: 40px;  */
+    text-align: center; 
+    margin-top: 2%;
+    margin-bottom: 2%;
+    padding-bottom: 1%; 
+    padding-top: 1%;
+
+    font-size: calc(4.5 * var(--textSize_1));
+}
+
+#textField{
+    height: 100%; 
+    width: 70%;
+    /* font-size: 30px; */
+    border-radius: 5%;
+
+    font-size: calc(3.8 * var(--textSize_1));  
+}
+
+#textBox{
+    height: 40%; 
+    text-align: center;
+    margin-top: 2%;
+    
+}
+
+#subBtn{
+    font-size: calc(2.2 * var(--textSize));
+}
+#supBtn{
+    font-size: calc(1.9 * var(--textSize));
+}
+#underlineBtn{
+    font-size: calc(2.1 * var(--textSize));
+}
+
+#boxOfButtons{
+    text-align: center; 
+    height: 10%; 
+    
+}
+#blockOfResult{
+    text-align: center;
+}
+
+#content{
+    height: 100%; 
+    margin-top: 6%;
+}
+
+@media only screen and (max-width:600px){
+    
+    #boxOfButtons{
+        /* media queries should always be at the bottom of stylesheet*/
+        
+        display: flex;
+        flex-direction: column;
+        float: left;
+        height: 100%;
+
+       
+       
+         width: 20%;  
+    }
+    .buttons{
+        height: 7%; 
+        width: 100%;
+        border-radius: 0%;
+       
+    }
+    #textBox{
+         display: inline-block; 
+        height: 50%;
+        width: 80%;
+      
+    }
+    #blockOfResult{
+      
+        margin-left: 20%;
+    }
+}
