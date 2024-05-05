@@ -83,133 +83,97 @@ functionOfButtons(isSubScript, buttonOf_subscript)
 functionOfButtons(isSuperScript, buttonOf_superscript)
 functionOfButtons(isUnderLined, buttonOf_underline)
 
+function CharacterOfHTML(text_value, html_value){
+    let val = text_value;
+    let html_val = html_value; 
+    this.getTextValue = function (){
+        return val;
+    }
+    this.getHTMLValue = function (){
+        return html_val;
+    }
+    this.setTextValue = function (newTextValue){
+        val = newTextValue;
+    }
+    this.setHTMLValue = function (newHTMLValue){
+        html_val = newHTMLValue;
+    }
+    this.equals = function (character){
+        if(html_val == "<br>" && character == "\n") return true;
+        if(val == "&nbsp" && character == " ") return true;
+        if(val === character) return true;
+
+        return false;
+    }
+
+}
+
+
+let arrayOfHtmlCharacters = [];
+
 
 document.getElementById("textBox").addEventListener('keyup', (event) => {
 
     if(event.ctrlKey) setTimeout(checkForUpdate, 100);
     if(event.key === "Backspace"){
-        let l = String(result.innerHTML).length - 1,
-        res = String(result.innerHTML),
-        txt = String(textField.value);
-       let j = txt.length - 1;
+        let txt = String(textField.value);
+        let j = txt.length - 1;
         
-        
+        let isAppliedToJustOneCharacter = false;
+        if(arrayOfHtmlCharacters.length == txt.length + 1) isAppliedToJustOneCharacter = true;
 
-       let io = 0;
-        for(let i = l;( i >= 0/* && j >= 0 && io < 1000*/); i--){
-        //    console.log(res + "    " + txt + "    here67")
-           
-            let lengthOfTag = 0 ;
-            if(res[i] == ">"){
-                if(txt[j] == "\n" && res.substring(i - 3, i + 1) == "<br>"){
-                    j--;
-                    i = i - 3;
-
-                    continue;
-
-                }
-                else if(txt[j] != "\n" && res.substring(i - 3, i + 1) == "<br>"){
-                    let str = res.substring(0, i - 3) + " " + res.substring(i + 1);
-                    result.innerHTML = deleteHtmlElement(str, i - 3);
-                    res = result.innerHTML;
-                  //  txt = txt.substring
-                    i = String(result.innerHTML).length ;
-                    j = txt.length - 1;
-                    continue;
-                }
-
-                while(res[i] != "<"){ 
-
-                    i--;
-                    lengthOfTag++;
-                }
-
-                continue;
-            }
-            if(res[i] != txt[j]){
-
-                result.innerHTML = deleteHtmlElement(res, i)
-                res = result.innerHTML;
+       
+        for(let i = arrayOfHtmlCharacters.length - 1; i >= 0; i-- ){
+            if(!(arrayOfHtmlCharacters[i].equals(txt[j]))){
                 
-                i = String(result.innerHTML).length ;
-                j = txt.length - 1;
-                io++;
-                continue;
-               
+                arrayOfHtmlCharacters.splice(i, 1);
+                result.innerHTML = arrayOfHtmlCharacters_string();
+
+                if(isAppliedToJustOneCharacter){
+                    break;
+                }
+                j++;
             }
-        
+
             j--;
         }
+
     }
 });
 
-let deleteHtmlElement = function(htmlText, index){
-    let txt = String(htmlText);
-    let indx = Number(index); 
-    
-  //  console.log(txt);
 
-    if(txt[indx + 1] != "<" || txt[indx - 1] != ">" || txt[indx + 2] != "/"){
-        return txt.substring(0, indx) + txt.substring(indx + 1);
+let updateArrayOfCharacters = function(newElement, index){
+    for(let i = arrayOfHtmlCharacters.length - 1; i >= index; i--){
+        arrayOfHtmlCharacters[i + 1] = arrayOfHtmlCharacters[i]
     }
-    
-    let i = indx + 1;
-    while(/*txt[i] != ">" &&*/ i < txt.length  && txt[i] == "<"){
-        
-        if(txt[i + 1] != "/" || txt.substring(i, i + 4) == "<br>") break;
-        while(txt[i] != ">"){
-           
-            i++;
-        }
-        i++;
-    }
-
-    let i2 = indx -1;
-    while(/*txt[i2] != "<"*/ i2 >= 0 && txt[i2 ] == ">"){
-        let i3 = i2;
-
-        
-        while(txt[i3] != "<"){
-            
-            i3--;
-        }
-        if(txt[i3 + 1] == "/" || txt.substring(i3, i3 + 4) == "<br>") {
-            
-            break;
-        }
-     
-        while(txt[i2] != "<"){
-            i2--;
-           
-        }
-        i2--;
-    }
-    
-    
-
-    return txt.substring(0, i2 + 1) + txt.substring(i );
+    arrayOfHtmlCharacters[index] = newElement;
 }
 
-let lastplainTextIndex_inHtmlString = (htmlText) =>{
-    input = String(htmlText);
-    for(let i = input.length - 1; i >= 0; i--){
-        if(input[i] == ">"){
-            while(input[i] != "<") i--;
-
-            continue;
-        }
-        return i;
+let arrayOfHtmlCharacters_string = function(){
+    let res = "";
+    for(let i = 0; i < arrayOfHtmlCharacters.length; i++){
+        res += arrayOfHtmlCharacters[i].getHTMLValue();
     }
+    return res;
 }
 
 document.getElementById("textBox").addEventListener('keypress', (event) => {
  
-    let x = event.key
+    let x = event.key;
 
-         if(x == "Enter" ) {
-     
-            x = "<br>";
-        }
+    let value = x;
+
+
+    if(x == " " ) {
+        value = "&nbsp";
+        x = value;
+    }
+
+    if(x == "Enter" ) {
+        value = null;
+        x = "<br>";
+    }
+    else{
         if(isbold.value) {
             x = "<b>" + x + "</b>";
         }
@@ -237,74 +201,40 @@ document.getElementById("textBox").addEventListener('keypress', (event) => {
         if(isUnderLined.value){
             x = "<u>" + x + "</u>";
         }
+    }
+
+    let element = new CharacterOfHTML(value, x)
    
  
     let run = function(){
-            let res = String(result.innerHTML),
-        txt = String(textField.value);
-
-       //console.log(res);
-
-        if(res.length == 0) {
-            result.innerHTML += x;
+    
+        let txt = String(textField.value);
+        
+        if(arrayOfHtmlCharacters.length == 0) {
+            
+            result.innerHTML += element.getHTMLValue();
+            arrayOfHtmlCharacters[0] = element;
             return;
         }
         let j = 0;
-        let offset = 0,
-        numberOfTag = 0;
-        for(let i = 0; i < res.length; i++){
         
-            if(res[i] == "<"){
+        for(let i = 0; i < arrayOfHtmlCharacters.length; i++){
+
+            if(!arrayOfHtmlCharacters[i].equals(txt[j])){
               
-                if(res.substring(i , i + 4) == "<br>"){
-                    if(txt[j] == "\n"){
-                        i = i + 3;
-                        j++;
-                        continue; 
-                    }
-                    else if(txt[j + 1] != "\n"){
-                        result.innerHTML = res.substring(0, i) + "<br>" + res.substring(i);
-                        
-                         return;
-                    }
-                    else{
-                        result.innerHTML = res.substring(0, i) + x + res.substring(i);
-                        return;
-                    }
-                }
-
-
-                let flag = false;
-                if(res[i + 1] == "/") flag = true;
-                while(res[i] != ">"){  
-                    i++;
-            
-                offset++;
-                }
-                numberOfTag++;
-                offset++;
-
-                if(flag){
-                    offset = 0;
-                    numberOfTag = 0;
-                }
-                
-
-                continue;
-            }
-          
-            if(res[i] != txt[j]  ){
-
-                result.innerHTML = res.substring(0, i - offset  ) + x + res.substring(i - (offset )/*, lastplainTextIndex_inHtmlString(result.innerHTML)*/ );
-                res = String(result.innerHTML);
+                updateArrayOfCharacters(element, i);
+                result.innerHTML = arrayOfHtmlCharacters_string();
         
                 return;
             }
             
             j++;
+                  
         }
         
-        result.innerHTML += x;
+     
+       updateArrayOfCharacters(element, arrayOfHtmlCharacters.length);
+       result.innerHTML = arrayOfHtmlCharacters_string();
 
     }
 
@@ -313,119 +243,63 @@ document.getElementById("textBox").addEventListener('keypress', (event) => {
  
 })
 
+
+
 let checkForUpdate = ()=>{
-  
-    let l = String(result.innerHTML).length - 1,
-    res = String(result.innerHTML),
-    txt = String(textField.value);
+    let txt = String(textField.value),
+    lengthOfCopiedItem = txt.length - arrayOfHtmlCharacters.length ;
+
     let j = 0;
 
+    let flag = true;
 
-    if(res.length == 0) {
-    //    theInsertedTxt = txt.slice(j + 1, j + lengthOfCopiedItem + 1);
+    let insert = (base) => {
+        let arr_1 = arrayOfHtmlCharacters.slice(0, base),
+        arr_2 = arrayOfHtmlCharacters.slice(base, arrayOfHtmlCharacters.length);
 
-            for(let i = 0; i < txt.length; i ++){
-                txt = txt.replace("\n","<br>");
-            }
-            
-            result.innerHTML += txt;
+        let backupOfTextField = String(textField.value);
+        textField.value = backupOfTextField.substring(base, base + lengthOfCopiedItem);
+
+
+        arrayOfHtmlCharacters = [];
+        for(let k = 0; k < lengthOfCopiedItem; k++){
+           
+            let chr = txt[base + k];
+            if(chr == "\n") chr = "Enter";
+          
+            let event = new KeyboardEvent('keypress', {'key': chr})
+            document.getElementById("textBox").dispatchEvent(event);
+        }
+
+        setTimeout(()=>{
+            textField.value = backupOfTextField;
+             arrayOfHtmlCharacters = arr_1.concat(arrayOfHtmlCharacters).concat(arr_2);
+        
+             result.innerHTML = arrayOfHtmlCharacters_string();
+        }, 200)
+       
     }
 
+    for(let i = 0; i < arrayOfHtmlCharacters.length; i++){
 
-    let plainTextOfRes = toPlainText(res);
-    let lengthOfCopiedItem =  txt.length - plainTextOfRes.length;
+        if(!arrayOfHtmlCharacters[i].equals(txt[j])){
 
-    let theInsertedTxt = "";
+            insert(i);
 
-    let offset = 0,
-    numberOfTag = 0;
-        
-
-    for(let i = 0; i < res.length; i++){
-
-
-        if(res[i] == "<"){
-            
-            if(res.substring(i , i + 4) == "<br>"){
-                if(txt[j] == "\n"){
-                    i = i + 3;
-                    j++;
-                    continue;
-                }
-                else{
-
-                
-
-                    theInsertedTxt = txt.slice(j, j + lengthOfCopiedItem);
-                    for(let i = 0; i < theInsertedTxt.length; i ++){
-                         theInsertedTxt = theInsertedTxt.replace("\n","<br>");
-                    }
-                    
-                   
-                    result.innerHTML = res.substring(0, i - offset) + theInsertedTxt + res.substring(i - offset);
-                    break;
-                }
-                
-            }
-          
             flag = false;
-            if(res[i + 1] == "/") flag = true;
-
-            while(res[i] != ">") {
-                 i++;
-                 offset++;
-            }
-            numberOfTag++;
-            offset++;
-
-            if(flag) {
-                offset = 0;
-                numberOfTag = 0;
-            }
-            continue;
-        }
-       
-        if(res[i] != txt[j] ){
-      
-            theInsertedTxt = txt.slice(j, j + lengthOfCopiedItem);
-
-            for(let i = 0; i < theInsertedTxt.length; i ++){
-                theInsertedTxt = theInsertedTxt.replace("\n","<br>");
-           }
-            result.innerHTML = res.substring(0, i - offset) + theInsertedTxt + res.substring(i - offset);
-   
             break;
-        }
 
-        if(j + 1 == plainTextOfRes.length){
-
-            theInsertedTxt = txt.slice(j + 1, j + lengthOfCopiedItem + 1);
-
-            for(let i = 0; i < theInsertedTxt.length; i ++){
-                theInsertedTxt = theInsertedTxt.replace("\n","<br>");
-            }
-            
-            result.innerHTML += theInsertedTxt;
-            break;
         }
 
         j++;
+
+    }
+
+    if(flag){
+
+        insert(arrayOfHtmlCharacters.length);
     }
     
 }
 
-let toPlainText = function(htmlText){
-    let txt = String(htmlText);
-    for(let i = 0; i < txt.length; i++){
-        if(txt[i] == "<"){
-           
-            while(txt[i] != ">"){
-                txt = txt.substring(0, i) + "" + txt.substring(i + 1)
-            }
-            txt = txt.substring(0, i) + "" + txt.substring(i + 1)
-            i--;
-        }
-    }
-    return txt;
-}
 
